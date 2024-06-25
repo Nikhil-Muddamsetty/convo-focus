@@ -1,8 +1,8 @@
 {
-  "name": "nest-typescript-starter",
+  "name": "convo-focus",
   "private": true,
   "version": "1.0.0",
-  "description": "Nest TypeScript starter repository",
+  "description": "convo-focus backend repository",
   "license": "MIT",
   "scripts": {
     "build": "nest build",
