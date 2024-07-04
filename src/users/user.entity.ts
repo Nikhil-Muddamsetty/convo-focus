@@ -1,8 +1,16 @@
-
-import { CountryDialCodeEnum } from 'src/utils/countryCode';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    OneToMany,
+    CreateDateColumn,
+    UpdateDateColumn,
+    Index,
+    Unique,
+} from 'typeorm';
 
 @Entity()
+@Unique(['dialCode', 'phone'])
 export class User {
     @PrimaryGeneratedColumn()
     id: number;
@@ -17,7 +25,7 @@ export class User {
         type: String,
         nullable: false
     })
-    dialCode: CountryDialCodeEnum;
+    dialCode: string;
 
     @Column({
         type: String,
@@ -28,7 +36,16 @@ export class User {
     @Column({ default: true })
     isActive: boolean;
 
-    @Column()
-    password: string;
+    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+    public created_at: Date;
+
+    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+    public updated_at: Date;
+
+    @Column({
+        type: 'boolean',
+        default: false
+    })
+    markedForDeletion: boolean;
 
 }

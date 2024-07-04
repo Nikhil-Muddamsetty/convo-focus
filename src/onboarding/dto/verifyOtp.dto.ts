@@ -1,7 +1,6 @@
-import { IsInt, IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsPositive, IsString } from 'class-validator';
 
-export class ResendOtpDto {
-
+export class VerifyOtpDto {
   @IsNotEmpty()
   @IsPositive()
   @IsInt()
@@ -14,4 +13,8 @@ export class ResendOtpDto {
   @IsString()
   @IsNotEmpty()
   phone: string;
+
+  @IsString()
+  @IsNotEmpty()
+  otp: string;
 }

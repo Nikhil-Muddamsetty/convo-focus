@@ -6,6 +6,7 @@ import { RegisterDto } from './dto/register.dto';
 import { Public } from './public.meta';
 import { TransformInterceptor } from 'src/utils/interceptors/transform.interceptor';
 import { ExpectedError } from 'src/utils/ExpectedError';
+import { ResendOtpDto } from './dto/resend-otp.dto';
 
 @Public()
 @Controller('auth')
@@ -66,14 +67,17 @@ export class AuthController {
         // This is where we will implement our phone verification logic
     }
 
-    @Post('verify-otp-phone')
-    async verifyOtpPhone() {
-        // This is where we will implement our OTP phone verification logic
-    }
-
     @Post('resend-otp-phone')
-    async resendOtpPhone() {
-        // This is where we will implement our resend OTP phone logic
+    async resendOtpPhone(@Body() resendOtpDto: ResendOtpDto) {
+        try {
+            return await this.onboardingService.resendVerificationOtp(resendOtpDto);
+        } catch (error) {
+            if (error instanceof ExpectedError) {
+                throw new BadRequestException(error.message);
+            } else {
+                throw new InternalServerErrorException(error.message);
+            }
+        }
     }
 
 }

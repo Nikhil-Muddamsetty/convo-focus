@@ -1,11 +1,11 @@
-import { IsEnum, IsString, Length } from "class-validator";
-import { CountryDialCodeEnum } from "src/utils/countryCode";
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class RegisterDto {
     @IsString()
-    @IsEnum(CountryDialCodeEnum)
-    dialCode: CountryDialCodeEnum;
+    @IsNotEmpty()
+    dialCode: string;
 
     @IsString()
+    @IsNotEmpty()
     phone: string;
 }
