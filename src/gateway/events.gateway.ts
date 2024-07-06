@@ -1,11 +1,11 @@
 import { UsePipes, ValidationPipe } from '@nestjs/common';
 import {
-    OnGatewayConnection,
-    OnGatewayDisconnect,
-    OnGatewayInit,
-    SubscribeMessage,
-    WebSocketGateway,
-    WebSocketServer,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  OnGatewayInit,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 
 import { Socket } from 'socket.io';
@@ -14,45 +14,41 @@ import { MessageService } from 'src/messages/messages.service';
 
 @UsePipes(new ValidationPipe())
 @WebSocketGateway({
-    cors: {
-        origin: '*',
-    },
+  cors: {
+    origin: '*',
+  },
 })
-export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-    // @WebSocketServer()
-    // server;
+export class EventsGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
+  // @WebSocketServer()
+  // server;
 
-    connectedUsers: Map<string, string> = new Map();
+  connectedUsers: Map<string, string> = new Map();
 
-    constructor(private messageService: MessageService) { }
+  constructor(private messageService: MessageService) {}
 
-    async afterInit(server: any) {
-        console.log('Init', server);
-    }
+  async afterInit(server: any) {
+    console.log('Init', server);
+  }
 
-    async handleConnection(client: Socket): Promise<void> {
-        console.log('handleConnection', client);
-    }
+  async handleConnection(client: Socket): Promise<void> {
+    console.log('handleConnection', client);
+  }
 
-    async handleDisconnect(client: Socket) {
-        console.log('handleDisconnect', client);
-    }
+  async handleDisconnect(client: Socket) {
+    console.log('handleDisconnect', client);
+  }
 
-    @SubscribeMessage('pushMessage')
-    handlePushMessage(client: Socket, pushMessageDto: PushMessageDto): void {
-        console.log(
-            pushMessageDto
-        );
-        this.messageService.pushNewMessage(pushMessageDto);
+  @SubscribeMessage('pushMessage')
+  handlePushMessage(client: Socket, pushMessageDto: PushMessageDto): void {
+    console.log(pushMessageDto);
+    this.messageService.pushNewMessage(pushMessageDto);
+  }
 
-    }
-
-    @SubscribeMessage('receiveMessage')
-    handleReceiveMessage(client: Socket, addMessageDto: string): string {
-        console.log(
-            addMessageDto
-        );
-        return addMessageDto
-    }
-
+  @SubscribeMessage('receiveMessage')
+  handleReceiveMessage(client: Socket, addMessageDto: string): string {
+    console.log(addMessageDto);
+    return addMessageDto;
+  }
 }

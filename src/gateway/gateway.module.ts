@@ -3,7 +3,7 @@ import { EventsGateway } from './events.gateway';
 import { MessagesModule } from 'src/messages/messages.module';
 
 @Module({
-    imports: [MessagesModule],
-    providers: [EventsGateway]
+  imports: [MessagesModule],
+  providers: [EventsGateway],
 })
-export class GatewayModule { }
+export class GatewayModule {}

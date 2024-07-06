@@ -1,6 +1,10 @@
-import "./utils/instrument";
-import * as Sentry from "@sentry/nestjs"
-import { NestFactory, BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
+import './utils/instrument';
+import * as Sentry from '@sentry/nestjs';
+import {
+  NestFactory,
+  BaseExceptionFilter,
+  HttpAdapterHost,
+} from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 

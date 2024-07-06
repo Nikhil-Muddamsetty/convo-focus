@@ -20,8 +20,12 @@ import { RegisterModule } from 'src/register/register.module';
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '60s' },
-    })],
-  providers: [AuthService, LocalStrategy, JwtStrategy,
+    }),
+  ],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
@@ -30,4 +34,4 @@ import { RegisterModule } from 'src/register/register.module';
   exports: [AuthService],
   controllers: [AuthController],
 })
-export class AuthModule { }
+export class AuthModule {}

@@ -1,7 +1,12 @@
-import { IsInt, IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsPositive,
+  IsString,
+} from 'class-validator';
 
 export class ResendOtpDto {
-
   @IsNotEmpty()
   @IsPositive()
   @IsInt()

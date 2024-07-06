@@ -22,11 +22,15 @@ import { RegisterModule } from './register/register.module';
       synchronize: true,
       autoLoadEntities: true,
     }),
-    GatewayModule, MessagesModule, AuthModule, UsersModule, RegisterModule],
+    GatewayModule,
+    MessagesModule,
+    AuthModule,
+    UsersModule,
+    RegisterModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-
 export class AppModule {
-  constructor(private dataSource: DataSource) { }
+  constructor(private dataSource: DataSource) {}
 }
