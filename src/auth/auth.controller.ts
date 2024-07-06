@@ -1,12 +1,9 @@
 import { BadRequestException, Body, Controller, HttpCode, HttpException, InternalServerErrorException, NotFoundException, Post, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { OnboardingService } from 'src/onboarding/onboarding.service';
 import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
 import { Public } from './public.meta';
 import { TransformInterceptor } from 'src/utils/interceptors/transform.interceptor';
-import { ExpectedError } from 'src/utils/ExpectedError';
-import { ResendOtpDto } from './dto/resend-otp.dto';
+import { ExpectedError } from 'src/utils/util-class';
 
 @Public()
 @Controller('auth')
@@ -16,7 +13,6 @@ export class AuthController {
 
     constructor(
         private authService: AuthService,
-        private onboardingService: OnboardingService,
     ) { }
 
     @Public()
@@ -24,20 +20,6 @@ export class AuthController {
     async login(@Body() loginDto: LoginDto) {
         try {
             return await this.authService.login(loginDto);
-        } catch (error) {
-            if (error instanceof ExpectedError) {
-                throw new BadRequestException(error.message);
-            } else {
-                throw new InternalServerErrorException(error.message);
-            }
-        }
-    }
-
-    @Public()
-    @Post('register')
-    async register(@Body() registerDto: RegisterDto) {
-        try {
-            return await this.onboardingService.onboardNewUser(registerDto);
         } catch (error) {
             if (error instanceof ExpectedError) {
                 throw new BadRequestException(error.message);
@@ -65,19 +47,6 @@ export class AuthController {
     @Post('verify-phone')
     async verifyPhone() {
         // This is where we will implement our phone verification logic
-    }
-
-    @Post('resend-otp-phone')
-    async resendOtpPhone(@Body() resendOtpDto: ResendOtpDto) {
-        try {
-            return await this.onboardingService.resendVerificationOtp(resendOtpDto);
-        } catch (error) {
-            if (error instanceof ExpectedError) {
-                throw new BadRequestException(error.message);
-            } else {
-                throw new InternalServerErrorException(error.message);
-            }
-        }
     }
 
 }

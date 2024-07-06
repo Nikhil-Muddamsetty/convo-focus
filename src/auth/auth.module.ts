@@ -10,13 +10,13 @@ import { JwtStrategy } from './jwt.strategy';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthController } from './auth.controller';
-import { OnboardingModule } from 'src/onboarding/onboarding.module';
+import { RegisterModule } from 'src/register/register.module';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
-    OnboardingModule,
+    RegisterModule,
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '60s' },

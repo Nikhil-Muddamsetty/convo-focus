@@ -7,7 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { OnboardingModule } from './onboarding/onboarding.module';
+import { RegisterModule } from './register/register.module';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { OnboardingModule } from './onboarding/onboarding.module';
       synchronize: true,
       autoLoadEntities: true,
     }),
-    GatewayModule, MessagesModule, AuthModule, UsersModule, OnboardingModule],
+    GatewayModule, MessagesModule, AuthModule, UsersModule, RegisterModule],
   controllers: [AppController],
   providers: [AppService],
 })

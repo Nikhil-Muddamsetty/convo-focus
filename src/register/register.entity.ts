@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
-export class Onboarding {
+export class Register {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -11,7 +11,7 @@ export class Onboarding {
         type: String,
         nullable: false
     })
-    dialCode: string;
+    dial_code: string;
 
     @Column()
     @IsNotEmpty()
@@ -24,13 +24,13 @@ export class Onboarding {
         type: 'int',
         default: 1,
     })
-    otpResendCount: number;
+    otp_resend_count: number;
 
     @Column({
         type: 'int',
         default: 0,
     })
-    otpAttemptCount: number;
+    otp_attempt_count: number;
 
     @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
     public created_at: Date;
@@ -42,5 +42,5 @@ export class Onboarding {
         type: 'boolean',
         default: false
     })
-    markedForDeletion: boolean;
+    marked_for_deletion: boolean;
 }

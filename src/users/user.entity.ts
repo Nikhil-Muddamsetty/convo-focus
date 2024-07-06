@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-@Unique(['dialCode', 'phone'])
+@Unique(['dial_code', 'phone'])
 export class User {
     @PrimaryGeneratedColumn()
     id: number;
@@ -25,7 +25,7 @@ export class User {
         type: String,
         nullable: false
     })
-    dialCode: string;
+    dial_code: string;
 
     @Column({
         type: String,
@@ -34,7 +34,7 @@ export class User {
     phone: string;
 
     @Column({ default: true })
-    isActive: boolean;
+    is_active: boolean;
 
     @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
     public created_at: Date;
@@ -46,6 +46,6 @@ export class User {
         type: 'boolean',
         default: false
     })
-    markedForDeletion: boolean;
+    marked_for_deletion: boolean;
 
 }

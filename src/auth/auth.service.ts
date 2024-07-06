@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { LoginDto } from './dto/login.dto';
-import { ExpectedError } from 'src/utils/ExpectedError';
+import { ExpectedError } from 'src/utils/util-class';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +20,7 @@ export class AuthService {
     async login(loginDto: LoginDto): Promise<any> {
         try {
             const { phone, dialCode } = loginDto;
-            const user = await this.usersService.findOneUsingPhone(dialCode, phone);
+            const user = await this.usersService.getUserWithPhone(dialCode, phone);
             if (user !== null) {
                 return {
                     access_token: this.jwtService.sign(user),

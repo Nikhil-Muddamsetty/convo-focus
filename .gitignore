@@ -401,3 +401,6 @@ dist
 
 #local postgres
 postgresql
+
+# Sentry Config File
+.sentryclirc
