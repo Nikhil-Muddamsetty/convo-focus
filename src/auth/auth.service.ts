@@ -1,15 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { sendOTP } from 'otpless-node-js-auth-sdk';
+import { sendOTP, verifyOTP } from 'otpless-node-js-auth-sdk';
 import { User } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
 import {
+  DatabaseResponse,
   ServiceError,
   ServiceResponse,
   UnhandeledError,
 } from 'src/utils/util-class';
 import { v7 as uuidV7 } from 'uuid';
 import { SignInDto } from './dto/signin.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
 
 @Injectable()
 export class AuthService {
@@ -45,6 +47,12 @@ export class AuthService {
           signInDto.phone,
         );
 
+      console.log(
+        'getUserWithPhoneResponse',
+        getUserWithPhoneResponse,
+        signInDto.dialCode,
+        signInDto.phone,
+      );
       if (!getUserWithPhoneResponse.success) {
         return new ServiceError('No user found with the provided phone.');
       }
@@ -113,5 +121,107 @@ export class AuthService {
     } catch (error) {
       throw new UnhandeledError(error);
     }
+  }
+
+  async verifyOtp(
+    verifyOtpDto: VerifyOtpDto,
+  ): Promise<ServiceResponse | ServiceError> {
+    try {
+      const getUserWithPhoneResponse: ServiceResponse | ServiceError =
+        await this.usersService.getUserWithPhone(
+          verifyOtpDto.dialCode,
+          verifyOtpDto.phone,
+        );
+
+      if (!getUserWithPhoneResponse.success) {
+        return new ServiceError('No user found with the provided phone.');
+      }
+
+      const user: User = getUserWithPhoneResponse.data;
+
+      if (!user.is_active) {
+        return new ServiceError('user has been blocked.');
+      }
+
+      if (user.otp_attempt_count >= 3) {
+        throw new ServiceError(
+          'You have crossed the maximum number of wrong OTP allowed. Please try again with another phone number or else after 24 hours with the same number',
+        );
+      }
+
+      // method signature - https://otpless.com/platforms/node?sdkTab=OTP
+      // const response = await verifyOTP(email, phoneNumber, orderId, otp, clientId, clientSecret);
+      const verifyOtpResponse = await verifyOTP(
+        null,
+        verifyOtpDto.dialCode + verifyOtpDto.phone,
+        verifyOtpDto.orderId,
+        verifyOtpDto.otp,
+        this.clientId,
+        this.clientSecret,
+      );
+
+      if (verifyOtpResponse?.success === false) {
+        throw new UnhandeledError(verifyOtpResponse);
+      } else if (verifyOtpResponse?.isOTPVerified === false) {
+        const updateOtpAttemptCountUsingIdResult: DatabaseResponse =
+          await this.usersService.updateOtpAttemptCountUsingId(user.id);
+
+        if (!updateOtpAttemptCountUsingIdResult?.success) {
+          throw new UnhandeledError(updateOtpAttemptCountUsingIdResult);
+        }
+
+        if (verifyOtpResponse?.reason === 'Incorrect OTP!') {
+          throw new ServiceError('Invalid OTP, please enter correct OTP.');
+        } else {
+          throw new UnhandeledError(updateOtpAttemptCountUsingIdResult);
+        }
+      }
+
+      const refreshTokenPayload = {
+        type: 'REFRESH',
+        sub: String(user.id),
+      };
+
+      const refreshTokenOptions = {
+        expiresIn: '50d',
+        audience: 'browser',
+        issuer: 'convo-focus',
+        subject: String(user.id),
+      };
+
+      const accessTokenPayload = {
+        type: 'ACCESS',
+        sub: String(user.id),
+      };
+
+      const accessTokenOptions = {
+        expiresIn: '5m',
+        audience: 'browser',
+        issuer: 'convo-focus',
+        subject: String(user.id),
+      };
+
+      return new ServiceResponse('OTP verified successfully', {
+        refreshToken: this.jwtService.sign(
+          refreshTokenPayload,
+          refreshTokenOptions,
+        ),
+        accessToken: this.jwtService.sign(
+          accessTokenPayload,
+          accessTokenOptions,
+        ),
+      });
+    } catch (error) {
+      if (error instanceof UnhandeledError) {
+        throw error;
+      } else {
+        throw new UnhandeledError(error);
+      }
+    }
+  }
+
+  async dummyToken(params: any): Promise<ServiceResponse> {
+    const token = this.jwtService.sign(params, { expiresIn: '60d' });
+    return new ServiceResponse('Successfully created dummy token', { token });
   }
 }

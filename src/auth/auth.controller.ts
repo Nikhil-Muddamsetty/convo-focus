@@ -1,11 +1,8 @@
-import {
-  Body,
-  Controller,
-  Post
-} from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { controllerErrorHandler } from 'src/utils/util-functions';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/signin.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { Public } from './public.meta';
 
 @Public()
@@ -19,7 +16,17 @@ export class AuthController {
     try {
       return await this.authService.signin(signinDto);
     } catch (error) {
-      throw controllerErrorHandler(error);
+      controllerErrorHandler(error);
+    }
+  }
+
+  @Public()
+  @Post('verify-otp-phone')
+  async verifyOtp(@Body() verifyOtpDto: VerifyOtpDto) {
+    try {
+      return await this.authService.verifyOtp(verifyOtpDto);
+    } catch (error) {
+      controllerErrorHandler(error);
     }
   }
 
@@ -41,5 +48,14 @@ export class AuthController {
   @Post('verify-phone')
   async verifyPhone() {
     // This is where we will implement our phone verification logic
+  }
+
+  @Post('dummy-token')
+  async dummyToken(@Body() body: any) {
+    try {
+      return await this.authService.dummyToken(body);
+    } catch (error) {
+      controllerErrorHandler(error);
+    }
   }
 }

@@ -4,7 +4,7 @@ import {
   DatabaseResponse,
   ServiceError,
   ServiceResponse,
-  UnhandeledError
+  UnhandeledError,
 } from 'src/utils/util-class';
 import { QueryFailedError, Repository, UpdateResult } from 'typeorm';
 import { CreateUserDto } from './dto/createUser.dto';
@@ -72,6 +72,48 @@ export class UsersService {
     }
   }
 
+  async updateOtpAttemptCountUsingId(
+    id: number,
+  ): Promise<ServiceResponse | ServiceError> {
+    try {
+      const updateOtpAttemptCountResult: DatabaseResponse =
+        await this.updateOtpAttemptCount(id);
+      if (updateOtpAttemptCountResult.success) {
+        return new ServiceResponse(
+          'Successfully updated OTP attempt count',
+          null,
+        );
+      } else {
+        return new ServiceError(updateOtpAttemptCountResult.message, null);
+      }
+    } catch (error) {
+      if (error instanceof UnhandeledError) {
+        throw error;
+      } else {
+        throw new UnhandeledError(error);
+      }
+    }
+  }
+
+  private async updateOtpAttemptCount(id: number): Promise<DatabaseResponse> {
+    try {
+      const updateResult: UpdateResult = await this.userRepository.update(id, {
+        otp_attempt_count: () => 'otp_attempt_count + 1',
+      });
+      if (updateResult.affected === 1) {
+        return new DatabaseResponse(
+          true,
+          'Successfully updated OTP attempt count',
+          null,
+        );
+      } else {
+        return new DatabaseResponse(false, 'User not found', null);
+      }
+    } catch (error) {
+      throw new UnhandeledError(error);
+    }
+  }
+
   async createNewUser(
     createUserDto: CreateUserDto,
   ): Promise<ServiceResponse | ServiceError> {
@@ -108,10 +150,14 @@ export class UsersService {
       const user = await this.userRepository.findOne({
         where: { phone, dial_code: dialCode },
       });
-      if(user){
+      if (user) {
         return new DatabaseResponse(true, 'Successfully found user', user);
-      }else{
-        return new DatabaseResponse(false, 'No user found with the provided phone', user);
+      } else {
+        return new DatabaseResponse(
+          false,
+          'No user found with the provided phone',
+          user,
+        );
       }
     } catch (error) {
       throw new UnhandeledError(error);
