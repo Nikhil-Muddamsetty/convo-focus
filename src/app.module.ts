@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { GatewayModule } from './gateway/gateway.module';
-import { MessagesModule } from './messages/messages.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
+import { GatewayModule } from './gateway/gateway.module';
+import { MessagesModule } from './messages/messages.module';
 import { RegisterModule } from './register/register.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [

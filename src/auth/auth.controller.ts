@@ -1,39 +1,25 @@
 import {
-  BadRequestException,
   Body,
   Controller,
-  HttpCode,
-  HttpException,
-  InternalServerErrorException,
-  NotFoundException,
-  Post,
-  UseInterceptors,
+  Post
 } from '@nestjs/common';
+import { controllerErrorHandler } from 'src/utils/util-functions';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
+import { SignInDto } from './dto/signin.dto';
 import { Public } from './public.meta';
-import { TransformInterceptor } from 'src/utils/interceptors/transform.interceptor';
-import { ExpectedError } from 'src/utils/util-class';
 
 @Public()
 @Controller('auth')
-@UseInterceptors(TransformInterceptor)
 export class AuthController {
-  // This is where we will implement our auth controller
-
   constructor(private authService: AuthService) {}
 
   @Public()
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body() signinDto: SignInDto) {
     try {
-      return await this.authService.login(loginDto);
+      return await this.authService.signin(signinDto);
     } catch (error) {
-      if (error instanceof ExpectedError) {
-        throw new BadRequestException(error.message);
-      } else {
-        throw new InternalServerErrorException(error.message);
-      }
+      throw controllerErrorHandler(error);
     }
   }
 

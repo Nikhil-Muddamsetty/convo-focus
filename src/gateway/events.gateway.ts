@@ -4,8 +4,7 @@ import {
   OnGatewayDisconnect,
   OnGatewayInit,
   SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
+  WebSocketGateway
 } from '@nestjs/websockets';
 
 import { Socket } from 'socket.io';
@@ -29,7 +28,7 @@ export class EventsGateway
   constructor(private messageService: MessageService) {}
 
   async afterInit(server: any) {
-    console.log('Init', server);
+    // console.log('Init', server);
   }
 
   async handleConnection(client: Socket): Promise<void> {

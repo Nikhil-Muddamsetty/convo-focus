@@ -1,73 +1,78 @@
 import { sendExceptionToSentry } from './util-functions';
 
 export class CustomError extends Error {
-  constructor(message: any, name: 'UnexpectedError' | 'ExpectedError') {
+  constructor(message: any, name: 'UnhandeledError') {
     super(message);
     this.name = name;
   }
 }
 
-export class UnexpectedError extends CustomError {
-  constructor(message: any, sendToSentry: boolean = false) {
-    super(message, 'UnexpectedError');
-    if (sendToSentry) {
-      sendExceptionToSentry(message);
-    }
-  }
-}
-
-export class ExpectedError extends CustomError {
-  constructor(message: any, sendToSentry: boolean = true) {
-    super(message, 'ExpectedError');
-    if (sendToSentry) {
-      sendExceptionToSentry(message);
-    }
-  }
-}
-
 export class UnhandeledError extends CustomError {
   constructor(message: any, sendToSentry: boolean = true) {
-    super(message, 'ExpectedError');
+    super(
+      message instanceof Error ? message.message : message,
+      'UnhandeledError',
+    );
     if (sendToSentry) {
       sendExceptionToSentry(message);
     }
   }
 }
+
+// export class UnhandeledError extends CustomError {
+//   originalStack?: string;
+
+//   constructor(message: any, sendToSentry: boolean = true) {
+//     // Check if message is an Error object
+//     if (message instanceof Error) {
+//       // Access the stack trace from the caught error
+//       const originalStack = message.stack;
+
+//       // Call super constructor with modified message (if needed)
+//       super(message.message || message, 'UnhandeledError');
+
+//       // Optionally modify or format the stack trace (if desired)
+
+//       // Assign the captured stack trace to a property
+//       this.originalStack = originalStack;
+//     } else {
+//       // Handle non-Error message scenario (optional)
+//       super(message, 'UnhandeledError');
+//     }
+
+//     if (sendToSentry) {
+//       sendExceptionToSentry(message);
+//     }
+//   }
+// }
 
 export class ProviderResponse {
   public success: boolean = false;
   public message: string | null = null;
   public data: any = null;
-  public errorType: 'CLIENT' | 'SERVER' | null = null;
 
-  constructor(
-    success: boolean,
-    message: string,
-    data: any,
-    errorType: 'CLIENT' | 'SERVER' | null,
-  ) {
+  constructor(success: boolean, message: string, data: any) {
     this.success = success;
     this.message = message;
     this.data = data;
-    this.errorType = errorType;
   }
 }
 
 export class ServiceResponse extends ProviderResponse {
   constructor(message: string, data: any = null) {
-    super(true, message, data, null);
+    super(true, message, data);
   }
 }
 
 export class ServiceError extends ProviderResponse {
   constructor(message: string, data: any = null) {
-    super(true, message, data, null);
+    super(false, message, data);
   }
 }
 
 export class ClientError extends ProviderResponse {
   constructor(message: string, data: any = null, error: Error = null) {
-    super(false, message, data, 'CLIENT');
+    super(false, message, data);
 
     if (error !== null) {
       sendExceptionToSentry(error);
@@ -77,7 +82,7 @@ export class ClientError extends ProviderResponse {
 
 export class ServerError extends ProviderResponse {
   constructor(message: string, data: any = null, error: Error = null) {
-    super(false, message, data, 'SERVER');
+    super(false, message, data);
 
     if (error !== null) {
       sendExceptionToSentry(error);
@@ -92,7 +97,7 @@ export class DatabaseResponse extends ProviderResponse {
     data: any = null,
     error: Error = null,
   ) {
-    super(success, message, data, null);
+    super(success, message, data);
 
     if (error !== null) {
       sendExceptionToSentry(error);

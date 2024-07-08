@@ -1,21 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { resendOTP, sendOTP, verifyOTP } from 'otpless-node-js-auth-sdk';
 import { UsersService } from 'src/users/users.service';
+import {
+  DatabaseResponse,
+  ServiceError,
+  ServiceResponse,
+  UnhandeledError,
+} from 'src/utils/util-class';
 import { Repository, UpdateResult } from 'typeorm';
-import { Register } from './register.entity';
-import { sendOTP, resendOTP, verifyOTP } from 'otpless-node-js-auth-sdk';
 import { RegisterDto } from './dto/register.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
-import {
-  ClientError,
-  DatabaseResponse,
-  ExpectedError,
-  ServiceError,
-  ServiceResponse,
-  UnexpectedError,
-  UnhandeledError,
-} from 'src/utils/util-class';
+import { Register } from './register.entity';
 
 @Injectable()
 export class RegisterService {
@@ -27,7 +24,7 @@ export class RegisterService {
   private channel = 'SMS';
   private hash = 'KRYNQE4SZCHM1V9LHZ21';
   private MAX_OTP_RESEND_COUNT = 3;
-  
+
   constructor(
     private userService: UsersService,
     @InjectRepository(Register)
@@ -86,9 +83,9 @@ export class RegisterService {
         this.clientSecret,
       );
 
-      if (!sendOtpResponse?.success) {
+      if (sendOtpResponse?.success === false) {
         if (sendOtpResponse?.errorMessage === 'Invalid Phone number') {
-          throw new ServiceError('Phone number is invalid, please try again');
+          return new ServiceError('Phone number is invalid, please try again');
         } else {
           throw new UnhandeledError(sendOtpResponse);
         }
@@ -102,10 +99,10 @@ export class RegisterService {
         );
       }
     } catch (error) {
-      if (error instanceof UnexpectedError || error instanceof ExpectedError) {
+      if (error instanceof UnhandeledError) {
         throw error;
       } else {
-        throw new UnexpectedError(error);
+        throw new UnhandeledError(error);
       }
     }
   }
@@ -181,10 +178,10 @@ export class RegisterService {
         });
       }
     } catch (error) {
-      if (error instanceof UnexpectedError) {
+      if (error instanceof UnhandeledError) {
         throw error;
       } else {
-        throw new UnexpectedError(error);
+        throw new UnhandeledError(error);
       }
     }
   }

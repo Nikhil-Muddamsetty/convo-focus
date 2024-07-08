@@ -1,12 +1,14 @@
-import './utils/instrument';
-import * as Sentry from '@sentry/nestjs';
+import { ValidationPipe } from '@nestjs/common';
 import {
-  NestFactory,
   BaseExceptionFilter,
   HttpAdapterHost,
+  NestFactory,
 } from '@nestjs/core';
+import * as Sentry from '@sentry/nestjs';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { HttpExceptionFilter } from './utils/ http-exception.filter';
+import './utils/instrument';
+import { TransformInterceptor } from './utils/interceptors/transform.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,6 +17,10 @@ async function bootstrap() {
   Sentry.setupNestErrorHandler(app, new BaseExceptionFilter(httpAdapter));
 
   app.useGlobalPipes(new ValidationPipe());
+
+  app.useGlobalInterceptors(new TransformInterceptor());
+
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   await app.listen(3000);
 }

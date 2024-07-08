@@ -1,12 +1,10 @@
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
   CreateDateColumn,
-  UpdateDateColumn,
-  Index,
+  Entity,
+  PrimaryGeneratedColumn,
   Unique,
+  UpdateDateColumn
 } from 'typeorm';
 
 @Entity()
@@ -14,12 +12,6 @@ import {
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({
-    type: String,
-    nullable: true,
-  })
-  name: string;
 
   @Column({
     type: String,
@@ -35,6 +27,21 @@ export class User {
 
   @Column({ default: true })
   is_active: boolean;
+
+  @Column({ type: String, array: true })
+  sentOtpOrderId: string[];
+
+  @Column({
+    type: 'int',
+    default: 0,
+  })
+  otp_resend_count: number;
+
+  @Column({
+    type: 'int',
+    default: 0,
+  })
+  otp_attempt_count: number;
 
   @CreateDateColumn({
     type: 'timestamp',

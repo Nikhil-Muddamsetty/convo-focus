@@ -1,20 +1,18 @@
 import {
-  BadRequestException,
   Body,
   Controller,
-  InternalServerErrorException,
-  Post,
+  Post
 } from '@nestjs/common';
+import { controllerErrorHandler } from 'src/utils/util-functions';
 import { Public } from '../auth/public.meta';
-import { ResendOtpDto } from 'src/auth/dto/resend-otp.dto';
-import { RegisterDto } from 'src/auth/dto/register.dto';
-import { RegisterService } from './register.service';
+import { RegisterDto } from './dto/register.dto';
+import { ResendOtpDto } from './dto/resend-otp.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
-import { ExpectedError } from 'src/utils/util-class';
-import { sendExceptionToSentry } from 'src/utils/util-functions';
+import { RegisterService } from './register.service';
 
 @Public()
 @Controller('register')
+
 export class RegisterController {
   constructor(private registerService: RegisterService) {}
 
@@ -24,12 +22,7 @@ export class RegisterController {
     try {
       return await this.registerService.registerNewUser(registerDto);
     } catch (error) {
-      if (error instanceof ExpectedError) {
-        throw new BadRequestException(error.message);
-      } else {
-        sendExceptionToSentry(error);
-        throw new InternalServerErrorException(error.message);
-      }
+      controllerErrorHandler(error);
     }
   }
 
@@ -38,12 +31,7 @@ export class RegisterController {
     try {
       return await this.registerService.resendVerificationOtp(resendOtpDto);
     } catch (error) {
-      if (error instanceof ExpectedError) {
-        throw new BadRequestException(error.message);
-      } else {
-        sendExceptionToSentry(error);
-        throw new InternalServerErrorException(error.message);
-      }
+      controllerErrorHandler(error);
     }
   }
 
@@ -54,12 +42,7 @@ export class RegisterController {
     try {
       return await this.registerService.verifyOtp(verifyOtpDto);
     } catch (error) {
-      if (error instanceof ExpectedError) {
-        throw new BadRequestException(error.message);
-      } else {
-        sendExceptionToSentry(error);
-        throw new InternalServerErrorException(error.message);
-      }
+      controllerErrorHandler(error);
     }
   }
 }
