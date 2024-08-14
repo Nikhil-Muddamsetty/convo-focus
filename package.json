@@ -34,6 +34,7 @@
     "@sentry/profiling-node": "^8.14.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.10.1",
     "otpless-node-js-auth-sdk": "^1.0.8",
     "passport": "^0.7.0",

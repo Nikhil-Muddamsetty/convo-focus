@@ -1,12 +1,19 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class PushMessageDto {
   @IsNotEmpty()
-  from: string;
+  @IsInt()
+  chatId: number;
 
   @IsNotEmpty()
-  to: string;
+  @IsInt()
+  from: number;
 
   @IsNotEmpty()
+  @IsInt()
+  to: number;
+
+  @IsNotEmpty()
+  @IsString()
   message: string;
 }

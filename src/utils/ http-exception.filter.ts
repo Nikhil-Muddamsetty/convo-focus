@@ -11,6 +11,7 @@ import { sendExceptionToSentry } from './util-functions';
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
+    console.log('exception', exception);
     if (exception instanceof UnhandeledError === false) {
       console.log('heerrreee ', exception);
       sendExceptionToSentry(exception);
